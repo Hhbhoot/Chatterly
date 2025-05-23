@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import GlobalErrorHandler from './Controllers/ErrorController.js';
+import AppError from './Utils/AppError.js';
+import UserRouter from './Routes/UserRoutes.js';
 
 const app = express();
 
@@ -13,17 +16,12 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(morgan('dev'));
 app.use(helmet());
+app.use(morgan('dev'));
 
-app.use(
-  express.json({
-    limit: '50mb',
-  }),
-);
+app.use(express.json());
 app.use(
   express.urlencoded({
-    limit: '50mb',
     extended: true,
   }),
 );
@@ -31,5 +29,14 @@ app.use(
 app.get('/api', (req, res) => {
   res.send('Hello from Chatterly');
 });
+
+app.get('/api/health-check', (req, res) => res.send('OK'));
+app.use('/api/v1/users', UserRouter);
+
+app.all(/.*/, (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use(GlobalErrorHandler);
 
 export default app;
