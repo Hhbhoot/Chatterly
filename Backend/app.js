@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import GlobalErrorHandler from './Controllers/ErrorController.js';
 import AppError from './Utils/AppError.js';
 import UserRouter from './Routes/UserRoutes.js';
+import { ExpressAuth } from '@auth/express';
+import Google from '@auth/express/providers/google';
 
 const app = express();
 
@@ -26,11 +28,13 @@ app.use(
   }),
 );
 
+app.set('trust proxy', true);
 app.get('/api', (req, res) => {
   res.send('Hello from Chatterly');
 });
 
 app.get('/api/health-check', (req, res) => res.send('OK'));
+app.use('/api/auth', ExpressAuth({ providers: [Google] }));
 app.use('/api/v1/users', UserRouter);
 
 app.all(/.*/, (req, res, next) => {

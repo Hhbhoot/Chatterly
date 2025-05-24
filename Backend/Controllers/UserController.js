@@ -1,12 +1,122 @@
 import UserModel from '../Models/UserModel.js';
 import asyncHandler from 'express-async-handler';
+import AppError from '../Utils/AppError.js';
+import cloudinary from '../Config/cloudinary.js';
+import generateToken from '../Utils/generateToken.js';
+import { removeCookie, saveCookie } from '../Utils/CookieSaver.js';
 
 const RegisterUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
-  res.json({
-    message: 'Register User',
-    data: req.body,
+
+  const avatarUrl = req.file?.path;
+  const avatarPublicId = req.file?.filename; // 'filename' in multer-cloudinary is actually the Cloudinary `public_id`
+
+  if (!name || !email || !password) {
+    if (avatarPublicId) {
+      await cloudinary.uploader.destroy(avatarPublicId);
+    }
+
+    return next(new AppError('Please provide all required fields', 400));
+  }
+
+  const userExists = await UserModel.findOne({ email });
+
+  if (userExists) {
+    if (avatarPublicId) {
+      await cloudinary.uploader.destroy(avatarPublicId);
+    }
+    return next(new AppError('User already exists', 400));
+  }
+
+  const user = await UserModel.create({
+    name,
+    email,
+    password,
+    avtar: {
+      url: avatarUrl,
+      publicId: avatarPublicId,
+    },
+  });
+  if (!user) {
+    if (avatarPublicId) {
+      await cloudinary.uploader.destroy(avatarPublicId);
+    }
+    return next(new AppError('Failed to register user ', 500));
+  }
+
+  const token = generateToken(user._id);
+  if (!token) {
+    if (avatarPublicId) {
+      await cloudinary.uploader.destroy(avatarPublicId);
+    }
+    return next(new AppError('Failed to generate token', 500));
+  }
+  saveCookie(token, res);
+  res.status(201).json({
+    status: 'success',
+    message: 'User registered successfully',
+    data: {
+      user,
+      token,
+    },
   });
 });
 
-export { RegisterUser };
+const LoginUser = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(new AppError('Please provide all required fields', 400));
+  }
+
+  const user = await UserModel.findOne({ email }).select('+password');
+
+  if (!user || !(await user.comparePassword(password))) {
+    return next(new AppError('Invalid email or password', 401));
+  }
+
+  const token = generateToken(user._id);
+  if (!token) {
+    return next(new AppError('Failed to generate token', 500));
+  }
+  saveCookie(token, res);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'User logged in successfully',
+    data: {
+      user,
+      token,
+    },
+  });
+});
+
+const GetUser = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+  res.status(200).json({
+    status: 'success',
+    message: 'User fetched successfully',
+    data: {
+      user,
+    },
+  });
+});
+
+const UpdateUser = asyncHandler(async (req, res, next) => {
+  const { name, email, password } = req.body;
+  const avatarUrl = req.file?.path;
+  const avatarPublicId = req.file?.filename;
+});
+
+const LogoutUser = asyncHandler(async (req, res, next) => {
+  removeCookie(res);
+  res.status(200).json({
+    status: 'success',
+    message: 'User logged out successfully',
+  });
+});
+
+export { RegisterUser, LoginUser, LogoutUser, GetUser, UpdateUser };

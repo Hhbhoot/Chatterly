@@ -16,7 +16,6 @@ const RegisterSchema = zod.object({
     .regex(/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/, {
       message: 'Password must contain at least one special character',
     }),
-  avtar: zod.string().url().optional(),
 });
 
 export default RegisterSchema;

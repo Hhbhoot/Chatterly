@@ -56,7 +56,8 @@ const sendErrorProd = (err, res) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  console.error(err);
+  let error = typeof err === 'string' ? new Error(err) : err;
+
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
@@ -64,7 +65,7 @@ const errorHandler = (err, req, res, next) => {
     return sendErrorDev(err, res);
   }
 
-  let error = { ...err };
+  error = { ...err };
   error.message = err.message;
 
   if (err.name === 'CastError') error = handleCastErrorDB(err);
