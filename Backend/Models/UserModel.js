@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema(
         default: '',
       },
     },
+    gender: {
+      type: String,
+      enum: ['male', 'female', 'other'],
+    },
     isOnline: {
       type: Boolean,
       default: false,

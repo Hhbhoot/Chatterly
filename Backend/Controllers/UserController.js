@@ -6,17 +6,24 @@ import generateToken from '../Utils/generateToken.js';
 import { removeCookie, saveCookie } from '../Utils/CookieSaver.js';
 
 const RegisterUser = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, confirmPassword, gender } = req.body;
 
   const avatarUrl = req.file?.path;
   const avatarPublicId = req.file?.filename; // 'filename' in multer-cloudinary is actually the Cloudinary `public_id`
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !gender) {
     if (avatarPublicId) {
       await cloudinary.uploader.destroy(avatarPublicId);
     }
 
     return next(new AppError('Please provide all required fields', 400));
+  }
+
+  if (password !== confirmPassword) {
+    if (avatarPublicId) {
+      await cloudinary.uploader.destroy(avatarPublicId);
+    }
+    return next(new AppError('Passwords do not match', 400));
   }
 
   const userExists = await UserModel.findOne({ email });
@@ -36,6 +43,7 @@ const RegisterUser = asyncHandler(async (req, res, next) => {
       url: avatarUrl,
       publicId: avatarPublicId,
     },
+    gender,
   });
   if (!user) {
     if (avatarPublicId) {
