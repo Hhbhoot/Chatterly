@@ -7,7 +7,7 @@ import { removeCookie, saveCookie } from '../Utils/CookieSaver.js';
 
 const RegisterUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmPassword, gender } = req.body;
-
+  console.log(password, confirmPassword);
   const avatarUrl = req.file?.path;
   const avatarPublicId = req.file?.filename; // 'filename' in multer-cloudinary is actually the Cloudinary `public_id`
 

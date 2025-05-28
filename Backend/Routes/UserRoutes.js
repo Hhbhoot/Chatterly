@@ -13,7 +13,7 @@ import LoginSchema from '../Zod/LoginSchema.js';
 import { LoginProtect } from '../Middlewares/auth.js';
 
 Router.route('/register').post(
-  upload.single('avtar'),
+  upload.single('avatar'),
   validateSchema(RegisterSchema),
   RegisterUser,
 );

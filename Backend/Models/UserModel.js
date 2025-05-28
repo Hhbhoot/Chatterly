@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
-    avtar: {
+    avatar: {
       url: {
         type: String,
         default: '',

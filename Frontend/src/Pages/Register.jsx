@@ -15,7 +15,7 @@ import {
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Helmet } from 'react-helmet';
 import { register } from '../apis';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -42,18 +42,14 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, password, confirmPassword, avatar } = formData;
-    console.log(formData);
-    if (!name || !email || !password || !confirmPassword) {
+    const { name, email, password, gender, confirmPassword, avatar } = formData;
+    if (!name || !email || !password || !confirmPassword || !gender) {
       toast.error('Please fill in all fields');
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match', {
-        duration: 3000,
-        position: 'top-right',
-      });
+      toast.error('Passwords do not match');
       return;
     }
 
@@ -66,6 +62,7 @@ const Register = () => {
     dataToSend.append('name', name);
     dataToSend.append('email', email);
     dataToSend.append('password', password);
+    dataToSend.append('confirmPassword', confirmPassword);
     dataToSend.append('gender', gender);
     dataToSend.append('avatar', avatar);
 
