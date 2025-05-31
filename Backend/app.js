@@ -7,6 +7,7 @@ import AppError from './Utils/AppError.js';
 import UserRouter from './Routes/UserRoutes.js';
 import { ExpressAuth } from '@auth/express';
 import Google from '@auth/express/providers/google';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -19,6 +20,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(helmet());
+app.use(cookieParser());
 app.use(morgan('dev'));
 
 app.use(express.json());

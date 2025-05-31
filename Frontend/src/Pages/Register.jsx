@@ -13,11 +13,16 @@ import {
   Avatar,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Helmet } from 'react-helmet';
 import { register } from '../apis';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSlice } from '../slice/authSlice';
+import { Helmet } from 'react-helmet-async';
 
 const Register = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -57,7 +62,6 @@ const Register = () => {
       toast.error('Password must be at least 8 characters long');
       return;
     }
-    console.log('hello');
     const dataToSend = new FormData();
     dataToSend.append('name', name);
     dataToSend.append('email', email);
@@ -69,18 +73,25 @@ const Register = () => {
     try {
       const { data } = await register(dataToSend);
 
-      if (!data.status !== 200) {
+      if (data.status !== 'success') {
         throw new Error(data.message);
       }
-      toast.success(data.message, {
-        duration: 3000,
-        position: 'top-right',
+      dispatch(loginSlice(data.data));
+      toast.success(data.message || 'Registration successful');
+      navigate('/');
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        gender: '',
+        avatar: null,
       });
+      setAvatarPreview(null);
     } catch (error) {
-      toast.error(error.message, {
-        duration: 3000,
-        position: 'top-right',
-      });
+      toast.error(
+        error.response.data.message || error.message || 'An error occurred',
+      );
     }
   };
 
@@ -109,7 +120,7 @@ const Register = () => {
           }}
         >
           {/* Logo */}
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Box sx={{ textAlign: 'center', mb: 1.5 }}>
             <img
               src="/img/call.png" // Replace with your logo path
               alt="App Logo"
@@ -117,14 +128,14 @@ const Register = () => {
             />
           </Box>
 
-          <Typography
+          {/* <Typography
             variant="h5"
             fontWeight="bold"
             align="center"
             gutterBottom
           >
             Register to {import.meta.env.VITE_APP_TITLE}
-          </Typography>
+          </Typography> */}
 
           <form onSubmit={handleSubmit}>
             <Box

@@ -11,7 +11,7 @@ const RegisterUser = asyncHandler(async (req, res, next) => {
   const avatarUrl = req.file?.path;
   const avatarPublicId = req.file?.filename; // 'filename' in multer-cloudinary is actually the Cloudinary `public_id`
 
-  if (!name || !email || !password || !gender) {
+  if (!name || !email || !password || !confirmPassword || !gender) {
     if (avatarPublicId) {
       await cloudinary.uploader.destroy(avatarPublicId);
     }
@@ -39,7 +39,7 @@ const RegisterUser = asyncHandler(async (req, res, next) => {
     name,
     email,
     password,
-    avtar: {
+    avatar: {
       url: avatarUrl,
       publicId: avatarPublicId,
     },

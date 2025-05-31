@@ -22,6 +22,6 @@ Router.route('/login').post(validateSchema(LoginSchema), LoginUser);
 
 Router.route('/me').get(LoginProtect, GetUser);
 
-Router.route('/logout').get(LoginProtect, LogoutUser);
+Router.route('/logout').post(LoginProtect, LogoutUser);
 
 export default Router;
