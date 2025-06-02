@@ -6,6 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginSlice } from '../slice/authSlice';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
+import { Link as MuiLink } from '@mui/material';
+import GoogleLogo from '../Components/GoogleLogo';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +17,7 @@ const Login = () => {
     email: '',
     password: '',
   });
+  const URL = import.meta.env.VITE_GOOGLE_CALLBACK;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,6 +108,7 @@ const Login = () => {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
+                  autoComplete="email"
                 />
               </Box>
 
@@ -115,6 +120,7 @@ const Login = () => {
                   type="password"
                   value={formData.password}
                   onChange={handleChange}
+                  autoComplete="current-password"
                 />
               </Box>
             </Box>
@@ -124,6 +130,85 @@ const Login = () => {
               </Button>
             </Box>
           </form>
+
+          <Box mt={2} textAlign="center">
+            <Typography
+              variant="body2"
+              sx={{
+                textDecoration: 'none',
+              }}
+            >
+              Don&apos;t have an account?{' '}
+              <MuiLink
+                sx={{
+                  textDecoration: 'none',
+                }}
+                component={Link}
+                to={'/register'}
+              >
+                Register
+              </MuiLink>
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+            }}
+          >
+            <hr
+              style={{
+                border: '1px solid #ccc',
+                margin: '20px 0',
+                width: '100%',
+              }}
+            />
+            <Typography variant="body2">Or</Typography>
+            <hr
+              style={{
+                border: '1px solid #ccc',
+                margin: '20px 0',
+                width: '100%',
+              }}
+            />
+          </Box>
+
+          <Box
+            mt={2}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+            }}
+            textAlign="center"
+          >
+            <Button
+              variant="contained"
+              fullWidth
+              size="large"
+              endIcon={<GoogleLogo />} // <- Add logo here
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                border: '1px solid #ccc',
+                boxShadow: 'none',
+                '&:hover': {
+                  backgroundColor: 'white',
+                  color: 'black',
+                  boxShadow: 'none',
+                },
+              }}
+              onClick={() => {
+                window.open(`${URL}`, '_self');
+              }}
+            >
+              Continue with
+            </Button>
+          </Box>
         </Box>
       </Container>
     </>
