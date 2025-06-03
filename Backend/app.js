@@ -43,7 +43,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'None',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
   }),
@@ -60,7 +60,7 @@ app.get('/api', (req, res) => {
 
 app.get('/api/health-check', (req, res) => res.send('OK'));
 
-app.use('/auth', AuthRouter);
+app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/users', UserRouter);
 
 app.all(/.*/, (req, res, next) => {

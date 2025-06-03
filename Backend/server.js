@@ -5,8 +5,10 @@ import http from 'http';
 import { connectDB } from './Db/index.js';
 import { initSocket } from './socket.js';
 const PORT = process.env.PORT || 8000;
-
+connectDB();
 const server = http.createServer(app);
+
+initSocket(server);
 
 server.listen(PORT, async (err) => {
   if (err) {
@@ -14,8 +16,6 @@ server.listen(PORT, async (err) => {
     process.exit(1);
   }
   console.log(`Server is running on port ${PORT}`);
-  await connectDB();
-  initSocket(server);
 });
 
 process.on('unhandledRejection', (err) => {

@@ -8,6 +8,7 @@ import { store } from './store/index.js';
 import { Provider } from 'react-redux';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/Auth.jsx';
+import { SocketProvider } from './context/socket.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,42 +16,44 @@ createRoot(document.getElementById('root')).render(
       <HelmetProvider>
         <Provider store={store}>
           <AuthProvider>
-            <App />
-            <Toaster
-              position="top-right"
-              reverseOrder={false}
-              toastOptions={{
-                style: {
-                  fontSize: '1.2rem',
-                  padding: '1rem',
-                  color: '#fff',
-                  backgroundColor: '#333',
-                  borderRadius: '0.5rem',
-                  boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
-                },
-                duration: 3000,
-                success: {
+            <SocketProvider>
+              <App />
+              <Toaster
+                position="top-right"
+                reverseOrder={false}
+                toastOptions={{
                   style: {
-                    backgroundColor: '#4CAF50',
+                    fontSize: '1.2rem',
+                    padding: '1rem',
+                    color: '#fff',
+                    backgroundColor: '#333',
+                    borderRadius: '0.5rem',
+                    boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
                   },
-                },
-                error: {
-                  style: {
-                    backgroundColor: '#f44336',
+                  duration: 3000,
+                  success: {
+                    style: {
+                      backgroundColor: '#4CAF50',
+                    },
                   },
-                },
-                info: {
-                  style: {
-                    backgroundColor: '#2196F3',
+                  error: {
+                    style: {
+                      backgroundColor: '#f44336',
+                    },
                   },
-                },
-                warning: {
-                  style: {
-                    backgroundColor: '#FFC107',
+                  info: {
+                    style: {
+                      backgroundColor: '#2196F3',
+                    },
                   },
-                },
-              }}
-            />
+                  warning: {
+                    style: {
+                      backgroundColor: '#FFC107',
+                    },
+                  },
+                }}
+              />
+            </SocketProvider>
           </AuthProvider>
         </Provider>
       </HelmetProvider>
