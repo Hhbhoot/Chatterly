@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
+import { removeSocketId, updateSocketId } from './Utils/socketUtils.js';
 
 let io;
 export const initSocket = (server) => {
@@ -23,18 +24,21 @@ export const initSocket = (server) => {
       return next(new Error('Authentication error: No token provided'));
     }
     try {
-      const user = jwt.verify(token, process.env.JWT_SECRET);
-      socket.user = user; // save user info on socket object if needed
+      const decodecd = jwt.verify(token, process.env.JWT_SECRET);
+      socket.userId = decodecd.id;
       next();
     } catch (err) {
       next(new Error('Authentication error: Invalid token'));
     }
   });
 
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
     console.log('a user connected with socket id', socket.id);
 
-    socket.on('disconnect', (reason) => {
+    await updateSocketId(socket.userId, socket.id);
+
+    socket.on('disconnect', async (reason) => {
+      await removeSocketId(socket.userId);
       console.log(`❌ User disconnected: ${socket.id} | Reason: ${reason}`);
     });
 

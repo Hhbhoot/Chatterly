@@ -10,7 +10,13 @@ router.get(
 router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
+  (err, req, res) => {
+    if (err) {
+      console.error('OAuth Error:', err); // <--- this will show the real issue
+      return res.redirect('/login?error=oauth');
+    }
+
+    console.log(req.user);
     res.redirect(process.env.DOMAIN_URL);
   },
 );
