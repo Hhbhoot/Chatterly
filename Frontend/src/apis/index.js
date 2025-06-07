@@ -12,3 +12,15 @@ export const logout = async (data, params, headers) =>
 
 export const getMe = async (params, headers) =>
   await http.get(`${baseURL}/users/me`, { params, headers });
+
+export const forgotPassword = async (data, params, headers) =>
+  await http.post(`${baseURL}/users/forgot-password`, data, {
+    params,
+    headers,
+  });
+
+export const resetPassword = async (data, params, headers) =>
+  await http.post(`${baseURL}/users/reset-password`, data, {
+    params,
+    headers,
+  });

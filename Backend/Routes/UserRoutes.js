@@ -1,6 +1,7 @@
 import express from 'express';
 const Router = express.Router();
 import {
+  ForgotPassword,
   GetUser,
   LoginUser,
   LogoutUser,
@@ -21,6 +22,8 @@ Router.route('/register').post(
 Router.route('/login').post(validateSchema(LoginSchema), LoginUser);
 
 Router.route('/me').get(LoginProtect, GetUser);
+
+Router.route('/forgot-password').post(ForgotPassword);
 
 Router.route('/logout').post(LoginProtect, LogoutUser);
 

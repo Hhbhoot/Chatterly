@@ -11,7 +11,11 @@ import {
   Select,
   FormControl,
   Avatar,
+  Link as MuiLink,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { register } from '../apis';
 import { toast } from 'react-hot-toast';
@@ -19,6 +23,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginSlice } from '../slice/authSlice';
 import { Helmet } from 'react-helmet-async';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -31,6 +37,8 @@ const Register = () => {
     gender: '',
     avatar: null,
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [avatarPreview, setAvatarPreview] = useState(null);
 
@@ -173,9 +181,25 @@ const Register = () => {
                   fullWidth
                   label="Password"
                   name="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
+                  autoComplete="new-password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <RemoveRedEyeIcon />
+                          ) : (
+                            <VisibilityOffIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Box>
 
@@ -184,9 +208,27 @@ const Register = () => {
                   fullWidth
                   label="Confirm Password"
                   name="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  autoComplete="new-password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <RemoveRedEyeIcon />
+                          ) : (
+                            <VisibilityOffIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Box>
 
@@ -239,6 +281,25 @@ const Register = () => {
               </Button>
             </Box>
           </form>
+          <Box mt={2} textAlign="center">
+            <Typography
+              variant="body2"
+              sx={{
+                textDecoration: 'none',
+              }}
+            >
+              Already have an account?{' '}
+              <MuiLink
+                sx={{
+                  textDecoration: 'none',
+                }}
+                component={Link}
+                to={'/login'}
+              >
+                Login here
+              </MuiLink>
+            </Typography>
+          </Box>
         </Box>
       </Container>
     </>

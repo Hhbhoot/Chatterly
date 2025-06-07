@@ -1,6 +1,13 @@
 import './App.css';
 import { Routes, Route, Router, Outlet } from 'react-router-dom';
-import { Home, Login, Register } from './Pages';
+import {
+  AuthSuccess,
+  ForgotPassword,
+  Home,
+  Login,
+  Register,
+  ResetPassword,
+} from './Pages';
 import { ProtectedRoutes } from './Components/ProtectedRoutes';
 import PublicRoute from './Components/PublicRoute';
 
@@ -29,11 +36,29 @@ function AppRouter() {
           }
         />
         <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+
+        <Route
           path="/*"
           element={
             <ProtectedRoutes>
               <Layout>
                 <Routes>
+                  <Route path="/auth-success" element={<AuthSuccess />} />
                   <Route path="/" element={<Home />} />
                 </Routes>
               </Layout>

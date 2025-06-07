@@ -1,14 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { login as loginUser } from '../apis';
-import { Box, Button, Container, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginSlice } from '../slice/authSlice';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Link as MuiLink } from '@mui/material';
 import GoogleLogo from '../Components/GoogleLogo';
+import FacebookLogo from '../Components/FacebookLogo';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,6 +28,10 @@ const Login = () => {
     email: '',
     password: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const error = queryParams.get('error');
   const URL = import.meta.env.VITE_GOOGLE_CALLBACK;
 
   const handleChange = (e) => {
@@ -50,6 +65,12 @@ const Login = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error('Login failed. Please try again.');
+    }
+  }, [error]);
 
   return (
     <>
@@ -109,6 +130,8 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleChange}
                   autoComplete="email"
+                  required
+                  autoFocus
                 />
               </Box>
 
@@ -117,10 +140,26 @@ const Login = () => {
                   fullWidth
                   label="Password"
                   name="password"
-                  type="password"
+                  required
+                  type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
                   autoComplete="current-password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <RemoveRedEyeIcon />
+                          ) : (
+                            <VisibilityOffIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Box>
             </Box>
@@ -131,7 +170,14 @@ const Login = () => {
             </Box>
           </form>
 
-          <Box mt={2} textAlign="center">
+          <Box
+            mt={2}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
             <Typography
               variant="body2"
               sx={{
@@ -146,7 +192,23 @@ const Login = () => {
                 component={Link}
                 to={'/register'}
               >
-                Register
+                Register here
+              </MuiLink>
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                textDecoration: 'none',
+              }}
+            >
+              <MuiLink
+                sx={{
+                  textDecoration: 'none',
+                }}
+                component={Link}
+                to={'/forgot-password'}
+              >
+                Forgot Password ?
               </MuiLink>
             </Typography>
           </Box>
@@ -190,7 +252,7 @@ const Login = () => {
               variant="contained"
               fullWidth
               size="large"
-              endIcon={<GoogleLogo />} // <- Add logo here
+              endIcon={<GoogleLogo />}
               sx={{
                 backgroundColor: 'white',
                 color: 'black',
@@ -205,9 +267,30 @@ const Login = () => {
               onClick={() => {
                 window.open(`${URL}`, '_self');
               }}
-            >
-              Continue with
-            </Button>
+            ></Button>
+            <Button
+              variant="contained"
+              fullWidth
+              size="large"
+              endIcon={<FacebookLogo />}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                border: '1px solid #ccc',
+                boxShadow: 'none',
+                '&:hover': {
+                  backgroundColor: 'white',
+                  color: 'black',
+                  boxShadow: 'none',
+                },
+              }}
+              onClick={() => {
+                window.open(
+                  `${import.meta.env.VITE_FACEBOOK_CALLBACK}`,
+                  '_self',
+                );
+              }}
+            ></Button>
           </Box>
         </Box>
       </Container>

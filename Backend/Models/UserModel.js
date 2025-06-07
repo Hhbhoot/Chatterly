@@ -49,6 +49,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    provider: {
+      type: String,
+      enum: ['email', 'google', 'facebook'],
+      default: 'email',
+    },
   },
   {
     timestamps: true,

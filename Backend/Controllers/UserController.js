@@ -4,6 +4,7 @@ import AppError from '../Utils/AppError.js';
 import cloudinary from '../Config/cloudinary.js';
 import generateToken from '../Utils/generateToken.js';
 import { removeCookie, saveCookie } from '../Utils/CookieSaver.js';
+import sendMail from '../Utils/sendMail.js';
 
 const RegisterUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmPassword, gender } = req.body;
@@ -127,4 +128,42 @@ const LogoutUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-export { RegisterUser, LoginUser, LogoutUser, GetUser, UpdateUser };
+const ForgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return next(new AppError('Please provide all required fields', 400));
+  }
+
+  const user = await UserModel.findOne({ email });
+
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  const token = generateToken(user._id);
+  if (!token) {
+    return next(new AppError('Failed to generate token', 500));
+  }
+
+  const data = await sendMail(user.name, email, token);
+  
+  if (!data) {
+    return next(new AppError('Failed to send password reset email', 500));
+  }
+
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Password reset email sent successfully',
+  });
+});
+
+export {
+  RegisterUser,
+  LoginUser,
+  LogoutUser,
+  GetUser,
+  UpdateUser,
+  ForgotPassword,
+};

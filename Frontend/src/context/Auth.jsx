@@ -14,9 +14,14 @@ export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(true); // auth check in progress
+  const [loading, setLoading] = useState(true);
 
-  const isPublicRoute = ['/login', '/register'].includes(location.pathname);
+  const isPublicRoute = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+  ].includes(location.pathname);
 
   const validateUser = async () => {
     setLoading(true);
