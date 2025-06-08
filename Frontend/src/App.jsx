@@ -5,11 +5,14 @@ import {
   ForgotPassword,
   Home,
   Login,
+  Profile,
   Register,
   ResetPassword,
 } from './Pages';
 import { ProtectedRoutes } from './Components/ProtectedRoutes';
 import PublicRoute from './Components/PublicRoute';
+import { Box } from '@mui/material';
+import Header from './Components/Header';
 
 function App() {
   return <AppRouter />;
@@ -58,8 +61,8 @@ function AppRouter() {
             <ProtectedRoutes>
               <Layout>
                 <Routes>
-                  <Route path="/auth-success" element={<AuthSuccess />} />
                   <Route path="/" element={<Home />} />
+                  <Route path="/profile" element={<Profile />} />
                 </Routes>
               </Layout>
             </ProtectedRoutes>
@@ -72,9 +75,16 @@ function AppRouter() {
 
 function Layout({ children }) {
   return (
-    <div>
-      <div className="container">{children}</div>
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+      }}
+    >
+      <Header />
+      <Box>{children}</Box>
+    </Box>
   );
 }
 

@@ -1,5 +1,11 @@
 const validateSchema = (schema) => (req, res, next) => {
-  const result = schema.safeParse(req?.body);
+  const data = {
+    ...req.params,
+    ...req.query,
+    ...req.body,
+  };
+
+  const result = schema.safeParse(data);
 
   if (!result.success) {
     return res.status(400).json({

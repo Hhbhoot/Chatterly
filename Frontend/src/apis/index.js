@@ -24,3 +24,9 @@ export const resetPassword = async (data, params, headers) =>
     params,
     headers,
   });
+
+export const validateToken = async (data, params, headers) =>
+  await http.get(`${baseURL}/users/validate-token?token=${data}`, {
+    params,
+    headers,
+  });

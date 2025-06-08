@@ -5,12 +5,12 @@ import cloudinary from '../Config/cloudinary.js';
 import generateToken from '../Utils/generateToken.js';
 import { removeCookie, saveCookie } from '../Utils/CookieSaver.js';
 import sendMail from '../Utils/sendMail.js';
+import jwt from 'jsonwebtoken';
 
 const RegisterUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmPassword, gender } = req.body;
-  console.log(password, confirmPassword);
   const avatarUrl = req.file?.path;
-  const avatarPublicId = req.file?.filename; // 'filename' in multer-cloudinary is actually the Cloudinary `public_id`
+  const avatarPublicId = req.file?.filename;
 
   if (!name || !email || !password || !confirmPassword || !gender) {
     if (avatarPublicId) {
@@ -141,21 +141,65 @@ const ForgotPassword = asyncHandler(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
-  const token = generateToken(user._id);
+  const token = generateToken(user._id, '15m');
   if (!token) {
     return next(new AppError('Failed to generate token', 500));
   }
 
   const data = await sendMail(user.name, email, token);
-  
+
   if (!data) {
     return next(new AppError('Failed to send password reset email', 500));
   }
 
-
   res.status(200).json({
     status: 'success',
     message: 'Password reset email sent successfully',
+  });
+});
+
+const validateToken = asyncHandler(async (req, res, next) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return next(new AppError('Please provide all required fields', 400));
+  }
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  const user = await UserModel.findById(decoded.id);
+
+  if (!user) {
+    return next(new AppError('Invalid Token.', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Token is valid',
+  });
+});
+
+const ResetPassword = asyncHandler(async (req, res, next) => {
+  const { password, token } = req.body;
+
+  if (!password || !token) {
+    return next(new AppError('Please provide all required fields', 400));
+  }
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  const user = await UserModel.findById(decoded.id).select('+password');
+
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  user.password = password;
+  await user.save();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Password reset successfully',
   });
 });
 
@@ -166,4 +210,6 @@ export {
   GetUser,
   UpdateUser,
   ForgotPassword,
+  validateToken,
+  ResetPassword,
 };

@@ -7,31 +7,40 @@ import {
   TextField,
   Button,
   Avatar,
+  CircularProgress,
 } from '@mui/material';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import toast from 'react-hot-toast';
 import { forgotPassword } from '../apis';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!email) {
       toast.error('Please enter your email address.');
       return;
     }
-
+    setLoading(true);
     try {
       const { data } = await forgotPassword({ email });
-      console.log(data);
+
+      if (data.status !== 'success') {
+        throw new Error(data.message);
+      }
+      setSubmitted(true);
     } catch (error) {
       console.error(error);
+      toast.error(error.response?.data?.message || 'Something went wrong.');
+    } finally {
+      setLoading(false);
     }
-
-    setSubmitted(true);
   };
 
   return (
@@ -51,8 +60,18 @@ function ForgotPassword() {
           boxShadow: 6,
           borderRadius: 3,
           textAlign: 'center',
+          position: 'relative',
         }}
       >
+        <ArrowBackIcon
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/login')}
+        />
         <CardContent>
           <Avatar sx={{ bgcolor: 'primary.main', mx: 'auto', mb: 2 }}>
             <LockResetIcon />
@@ -86,9 +105,17 @@ function ForgotPassword() {
                 variant="contained"
                 color="primary"
                 fullWidth
+                disabled={loading}
                 sx={{ py: 1.3, fontWeight: 600 }}
               >
-                Send Reset Link
+                {loading ? (
+                  <>
+                    <CircularProgress size={20} />
+                    <span style={{ marginLeft: 8 }}>Sending...</span>
+                  </>
+                ) : (
+                  'Send Reset Link'
+                )}
               </Button>
             </form>
           )}

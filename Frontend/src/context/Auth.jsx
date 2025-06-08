@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getMe } from '../apis';
+import { getMe, logout } from '../apis';
 import { loginSlice, logoutSlice } from '../slice/authSlice';
 import Spinner from '../Components/Spinner';
 import { Box } from '@mui/material';
@@ -15,6 +15,19 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
+
+  const handleLogout = async () => {
+    try {
+      const { data } = await logout();
+
+      if (data.status !== 'success') {
+        throw new Error(data.message);
+      }
+      dispatch(logoutSlice());
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const isPublicRoute = [
     '/login',
@@ -73,5 +86,9 @@ export const AuthProvider = ({ children }) => {
     );
   }
 
-  return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ handleLogout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

@@ -4,3 +4,4 @@ export { default as Home } from './Home.jsx';
 export { default as AuthSuccess } from './AuthSuccess.jsx';
 export { default as ForgotPassword } from './ForgotPassword.jsx';
 export { default as ResetPassword } from './ResetPassword.jsx';
+export { default as Profile } from './Profile.jsx';
