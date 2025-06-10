@@ -6,6 +6,7 @@ import generateToken from '../Utils/generateToken.js';
 import { removeCookie, saveCookie } from '../Utils/CookieSaver.js';
 import sendMail from '../Utils/sendMail.js';
 import jwt from 'jsonwebtoken';
+import { removeSocketId } from '../Utils/socketUtils.js';
 
 const RegisterUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmPassword, gender } = req.body;
@@ -122,6 +123,7 @@ const UpdateUser = asyncHandler(async (req, res, next) => {
 
 const LogoutUser = asyncHandler(async (req, res, next) => {
   removeCookie(res);
+  removeSocketId(req.user._id);
   res.status(200).json({
     status: 'success',
     message: 'User logged out successfully',

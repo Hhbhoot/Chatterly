@@ -1,7 +1,11 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
-import { removeSocketId, updateSocketId } from './Utils/socketUtils.js';
+import {
+  getAllUsers,
+  removeSocketId,
+  updateSocketId,
+} from './Utils/socketUtils.js';
 
 let io;
 export const initSocket = (server) => {
@@ -36,6 +40,11 @@ export const initSocket = (server) => {
     console.log('a user connected with socket id', socket.id);
 
     await updateSocketId(socket.userId, socket.id);
+
+    socket.on('event:users', async () => {
+      const users = await getAllUsers();
+      io.emit('event:users', users);
+    });
 
     socket.on('disconnect', async (reason) => {
       await removeSocketId(socket.userId);

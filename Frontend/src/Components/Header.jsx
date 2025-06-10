@@ -45,7 +45,13 @@ const Header = () => {
     <>
       <AppBar
         position="static"
-        sx={{ bgcolor: '#fff', position: 'sticky', top: 0 }}
+        sx={{
+          bgcolor: '#fff',
+          position: 'sticky',
+          top: 0,
+          height: '100%',
+          maxHeight: '12vh',
+        }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Box display="flex" alignItems="center" gap={2}>

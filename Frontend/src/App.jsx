@@ -1,7 +1,6 @@
 import './App.css';
 import { Routes, Route, Router, Outlet } from 'react-router-dom';
 import {
-  AuthSuccess,
   ForgotPassword,
   Home,
   Login,
@@ -79,11 +78,12 @@ function Layout({ children }) {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
       }}
     >
       <Header />
-      <Box>{children}</Box>
+      <Box sx={{ overflow: 'hidden', height: '100%', maxHeight: '88vh' }}>
+        {children}
+      </Box>
     </Box>
   );
 }
